@@ -1,10 +1,11 @@
 import bodyParser from "body-parser";
 import express, { Express } from "express";
 import serverConfig from "./config/serverConfig";
-import runPython from "./containers/runPythonDocker";
+// import runPython from "./containers/runPythonDocker";
 import apiRouter from "./routes";
 import SampleWorker from "./workers/SampleWorker";
 import bullBoardAdapter from "./config/bullBoardConfig";
+import runCpp from "./containers/runCpp";
 
 const app: Express = express();
 
@@ -22,16 +23,38 @@ app.listen(serverConfig.PORT, () => {
 
 	SampleWorker('SampleQueue');
 
-	const code = `x = input()
-y = input()
-print("value of x is", x)
-print("value of y is", y)
-`;
+	const userCode = `
+  
+    class Solution {
+      public:
+      vector<int> permute() {
+          vector<int> v;
+          v.push_back(10);
+          return v;
+      }
+    };
+  `;
 
-	const inputCase = `100
-200
-`;
+	const code = `
+  #include<iostream>
+  #include<vector>
+  #include<stdio.h>
+  using namespace std;
+  
+  ${userCode}
+  int main() {
+    Solution s;
+    vector<int> result = s.permute();
+    for(int x : result) {
+      cout<<x<<" ";
+    }
+    cout<<endl;
+    return 0;
+  }
+  `;
 
-	runPython(code, inputCase);
+const inputCase = `10`;
+
+	runCpp(code, inputCase);
 
 });  
